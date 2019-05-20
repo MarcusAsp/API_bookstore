@@ -1,0 +1,47 @@
+.StripeElement {
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+}
+.StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+}
+.StripeElement--invalid {
+    border-color: #fa755a;
+}
+.StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+}
+
+.form-row > div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.form-row > div > div{
+    margin: 15px 0 0 0;
+    width: 250px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#payment-form{
+    margin: 300px auto 0 auto;
+    width: 500px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid orange;
+}
+
+#logIn, #signUp{
+    margin: 300px auto 0 auto;
+    width: 500px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid orange;
+}
