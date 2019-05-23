@@ -8,38 +8,43 @@ class User {
     }
 
     public function logIn($email, $password){
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email AND pass = :pass");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-        $stmt->bindParam(":pass", $password, PDO::PARAM_STR);
-        if($stmt->execute() && $stmt->fetchColumn()){
-            $_SESSION['user'] = $email;
-            Header('Location: service.php');
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        if($result === true){
+            $args = $stmt->fetchColumn();
+            var_dump($args);
+            /*
+            if(){
+                $_SESSION['user'] = $email;
+                Header('Location: service.php');
+            }
+            */
         }else {
             echo "<script>alert('User does not exists!');</script>";
          }
         
     }
 
-    public function userExist($email){
+    public function userExist($email, $getInfo = false){
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
         if($stmt->execute([':email' => $email]) && $stmt->fetchColumn()){
-            return true;
+            if($getInfo == false){
+                return true;
+            }else{
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
         }
     }
 
-    public function userInfo($email){
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
-        if($stmt->execute([':email' => $email]) && $stmt->fetchColumn()){
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-    }
 
 
 
     public function createAccount($userInfo){
         if($this->userExist($userInfo['email'])){
             echo "<script>alert('User aready exists!');</script>";
-            echo "WTF";
             die;
         }else {
         $stmt = $this->db->prepare("INSERT INTO users 
@@ -70,7 +75,7 @@ class User {
 
     public function setStripeId($stripeId){
         $user = $_SESSION['user'];
-        $userData = $this->userInfo($user);
+        $userData = $this->userExist($user, true);
         return $userData;
     }
 

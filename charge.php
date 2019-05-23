@@ -24,9 +24,7 @@ $token = $_POST['stripeToken'];
 $userClass = new User();
 $userInfo = $userClass->userExist($_SESSION['user']);
 
-// This is a 20.00 charge in SEK.
-// Charging a Customer
-// Create a Customer
+
 $name_first = "Batosai";
 $name_last = "Ednalan";
 $address = "New Cabalan Olongapo City";

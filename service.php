@@ -2,6 +2,10 @@
 session_start();
 //session_destroy();
 require_once('includes/user.inc.php');
+if(isset($_GET['logOut'])){
+  session_destroy();
+  Header('Location: index.php');
+}
 if(isset($_SESSION['user'])){
 ?>
 <html>
@@ -23,7 +27,7 @@ Upload your CSV file:<br>
     <div id="card-errors"></div-->
   <input type="submit" value="Submit Payment">
 </form>
-
+<a href="service.php?logOut=true">Log out!</a>
 <!-- The needed JS files -->
 <!-- JQUERY File -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -38,6 +42,8 @@ Upload your CSV file:<br>
 else{
   Header('Location: index.php');
 }
+
+
 
 
 $userClass = new User();

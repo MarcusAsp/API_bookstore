@@ -2,8 +2,8 @@
 session_start();
 require_once('includes/user.inc.php');
 
+// Kollar av ifall användaren klickat på registreringsknappen eller loginknappen och tar information utifrån detta.
 if (isset($_POST['register'])) {
-    
     $fname = filter_input(INPUT_POST, 'fname', FILTER_SANITIZE_STRING);
     $lname = filter_input(INPUT_POST, 'lname', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
@@ -12,8 +12,8 @@ if (isset($_POST['register'])) {
     $zip = filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_NUMBER_INT);
     $country = filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING);
     $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_NUMBER_INT);
-    $pass = filter_input(INPUT_POST, 'pass', FILTER_SANITIZE_STRING);
-    $pass = hash("sha256", $pass);
+    $pass = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+    $pass = password_hash($pass, PASSWORD_DEFAULT);
     $userInfo = ["email"=>$email, "pass"=>$pass, "fname"=>$fname, "lname"=>$lname, "adress"=>$adress, "state"=>$state, "zip"=>(int)$zip, "country"=>$country, "phone"=>(int)$phone];
 
     $user = new User();
@@ -21,10 +21,9 @@ if (isset($_POST['register'])) {
 
 } else if (isset($_POST['logIn'])) {
     
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
-    $pass = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+    $email = filter_input(INPUT_POST, 'email1', FILTER_SANITIZE_STRING);
+    $pass = filter_input(INPUT_POST, 'password1', FILTER_SANITIZE_STRING);
 
-    $pass = hash("sha256", $pass);
     $user = new User();
     $user->logIn($email, $pass);
 }
@@ -88,9 +87,9 @@ if (isset($_POST['register'])) {
             <button id="logInForm">Register Form!</button>
             <div>
                 <label>E-mail:</label>
-                <input type="text" name="email">
+                <input type="text" name="email1">
                 <label>Password:</label>
-                <input type="password" name="password">
+                <input type="password" name="password1">
             </div>
         </div>
         <input type="submit" name="logIn" value="Log in">
