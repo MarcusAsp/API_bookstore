@@ -1,11 +1,28 @@
 <pre>
 <?php
+
+if (isset($_FILES)) {
+    $check = true;
+    if ($_FILES['books_file']['type'] !== 'text/csv') {
+        $check = false;
+        Header('Location: service.php');
+    }
+    if ($check) {
+        $file_id = uniqid();
+        $path = realpath('./') . '/csv_uploads/' . $file_id . ".csv";
+        move_uploaded_file($_FILES['books_file']['tmp_name'], "$path");
+    }
+}
+
 require_once('vendor/stripe/stripe-php/init.php');
 
 \Stripe\Stripe::setApiKey('sk_test_2PDY77YQecnXCCzvlaePy98m00km8LjgsH'); //YOUR_STRIPE_SECRET_KEY
 
 // Get the token from the JS script
 $token = $_POST['stripeToken'];
+
+$userClass = new User();
+$userInfo = $userClass->userExist($_SESSION['user']);
 
 // This is a 20.00 charge in SEK.
 // Charging a Customer
@@ -28,7 +45,7 @@ $user_info = [
     'Phone' => $phone
 ];
 
-//$customer_id = 'cus_F6JvBzPCL24z4W';
+$customer_id = $SOMEARRAY['stripe_id'];
 
 if (isset($customer_id)) {
     try {

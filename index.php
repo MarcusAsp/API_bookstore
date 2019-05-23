@@ -1,7 +1,34 @@
 <?php
+session_start();
+require_once('includes/user.inc.php');
 
+if (isset($_POST['register'])) {
+    
+    $fname = filter_input(INPUT_POST, 'fname', FILTER_SANITIZE_STRING);
+    $lname = filter_input(INPUT_POST, 'lname', FILTER_SANITIZE_STRING);
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+    $adress = filter_input(INPUT_POST, 'adress', FILTER_SANITIZE_STRING);
+    $state = filter_input(INPUT_POST, 'state', FILTER_SANITIZE_STRING);
+    $zip = filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_NUMBER_INT);
+    $country = filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING);
+    $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_NUMBER_INT);
+    $pass = filter_input(INPUT_POST, 'pass', FILTER_SANITIZE_STRING);
+    $pass = hash("sha256", $pass);
+    $userInfo = ["email"=>$email, "pass"=>$pass, "fname"=>$fname, "lname"=>$lname, "adress"=>$adress, "state"=>$state, "zip"=>(int)$zip, "country"=>$country, "phone"=>(int)$phone];
+
+    $user = new User();
+    $user->createAccount($userInfo);
+
+} else if (isset($_POST['logIn'])) {
+    
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+    $pass = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+
+    $pass = hash("sha256", $pass);
+    $user = new User();
+    $user->logIn($email, $pass);
+}
 ?>
-
 <html>
 <head>
     <title>Login php</title>
@@ -40,7 +67,7 @@
                 </div>
                 <div>
                     <label>Zip:</label>
-                    <input type="number" name="zip">
+                    <input type="text" name="zip">
                 </div>
                 <div>
                     <label>Country:</label>
@@ -48,11 +75,11 @@
                 </div>
                 <div>
                     <label>Phone:</label>
-                    <input type="number" name="phone">
+                    <input type="text" name="phone">
                 </div>
             </div>
         </div>
-        <input type="submit" value="Register">
+        <input type="submit" name="register" value="Register">
     </form>
 
     <form method="post" id="signUp" style="display:none;">
@@ -66,7 +93,7 @@
                 <input type="password" name="password">
             </div>
         </div>
-        <input type="submit" value="Log in">
+        <input type="submit" name="logIn" value="Log in">
     </form>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="logInforms.js"></script>

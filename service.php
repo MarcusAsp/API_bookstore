@@ -1,19 +1,27 @@
+<?php
+session_start();
+//session_destroy();
+require_once('includes/user.inc.php');
+if(isset($_SESSION['user'])){
+?>
 <html>
 <head>
-<title>stripe php</title>
+<title>Service php</title>
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-<form action="charge.php" method="post" id="payment-form">
-  <div class="form-row">
+<form action="charge.php" method="post" id="payment-form" enctype="multipart/form-data">
+  
+Upload your CSV file:<br>
+<input type="file" name="books_file"><br>
+  <!--div class="form-row">
     <label for="card-element">Credit or debit card</label>
     <div id="card-element">
-      <!-- a Stripe Element will be inserted here. -->
+      
     </div>
-    <!-- Used to display form errors -->
-    <div id="card-errors"></div>
-  </div>
-  <button>Submit Payment</button>
+    
+    <div id="card-errors"></div-->
+  <input type="submit" value="Submit Payment">
 </form>
 
 <!-- The needed JS files -->
@@ -25,6 +33,15 @@
 
 <!-- Your JS File -->
 <script src="charge.js"></script>
+<?php 
+}
+else{
+  Header('Location: index.php');
+}
 
+
+$userClass = new User();
+$userInfo = $userClass->setStripeId(4234234);
+?>
 </body>
 </html>
