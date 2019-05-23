@@ -8,28 +8,32 @@ class User {
     }
 
     public function logIn($email, $password){
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-        $stmt->execute();
-        $result = $stmt->fetchColumn();
-        if($result === true){
-            $args = $stmt->fetchColumn();
-            var_dump($args);
-            /*
-            if(){
+         if (!empty($email) || !empty($password))
+        { 
+            $stmt = $this->db->prepare("SELECT pass FROM users WHERE email = :email");
+            $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+            $stmt->execute();
+            $hash = $stmt->fetchColumn();
+            
+            if(password_verify($password, $hash)) 
+            {
                 $_SESSION['user'] = $email;
-                Header('Location: service.php');
+                header('location: service.php');
             }
-            */
-        }else {
-            echo "<script>alert('User does not exists!');</script>";
-         }
-        
+            else 
+            {
+                echo "user not found";
+            }
+        }
+        else 
+        {
+            echo "User does not exists!";
+        }
     }
 
     public function userExist($email, $getInfo = false){
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
-        if($stmt->execute([':email' => $email]) && $stmt->fetchColumn()){
+        if($stmt->execute([':email' => $email]) === true){
             if($getInfo == false){
                 return true;
             }else{
@@ -38,9 +42,6 @@ class User {
             
         }
     }
-
-
-
 
     public function createAccount($userInfo){
         if($this->userExist($userInfo['email'])){
