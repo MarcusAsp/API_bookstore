@@ -1,6 +1,6 @@
 <pre>
 <?php
-
+require_once('includes/convert.inc.php');
 if (isset($_FILES)) {
     $check = true;
     if ($_FILES['books_file']['type'] !== 'text/csv') {

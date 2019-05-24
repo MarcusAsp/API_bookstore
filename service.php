@@ -2,11 +2,7 @@
 session_start();
 //session_destroy();
 require_once('includes/user.inc.php');
-if(isset($_GET['logOut'])){
-  session_destroy();
-  Header('Location: index.php');
-}
-if(isset($_SESSION['user'])){
+
 ?>
 <html>
 <head>
@@ -14,20 +10,32 @@ if(isset($_SESSION['user'])){
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-<form action="charge.php" method="post" id="payment-form" enctype="multipart/form-data">
+<form method="post" id="payment-form" enctype="multipart/form-data">
   
 Upload your CSV file:<br>
-<input type="file" name="books_file"><br>
-  <!--div class="form-row">
-    <label for="card-element">Credit or debit card</label>
-    <div id="card-element">
-      
-    </div>
-    
-    <div id="card-errors"></div-->
+<?php
+if(isset($_POST[''])){
+?>
+  <table>
+    <tr>
+      <th>ISBN</th>
+      <th>Book title</th>
+      <th>Author</th>
+  </tr>
+  <?php
+
+foreach(){
+
+}
+
+  ?>
+  </table>
+<?php
+}
+?>
   <input type="submit" value="Submit Payment">
 </form>
-<a href="service.php?logOut=true">Log out!</a>
+<a href="?logOut=true">Log out!</a>
 <!-- The needed JS files -->
 <!-- JQUERY File -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -37,14 +45,7 @@ Upload your CSV file:<br>
 
 <!-- Your JS File -->
 <script src="charge.js"></script>
-<?php 
-}
-else{
-  Header('Location: index.php');
-}
-
-
-
+<?php
 
 $userClass = new User();
 $userInfo = $userClass->setStripeId(4234234);
