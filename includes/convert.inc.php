@@ -13,24 +13,25 @@ class Convert
         $books[] = ['ISBN', 'Book title', 'Author'];
     }
 
-    public function getBooks(){
-
+    public function getBooks($filename){
+        if ($file_handle = fopen($filename, 'r')) {
+            // Read one line from the csv file, use comma as separator
+            while ($data = fgetcsv($file_handle)) {
+                $books[] = $this->fill_book($data[0]);
+            }
+            fclose($file_handle);
+            return $books;
+        }
     }
 
-    
+
 // The nested array to hold all the arrays
 
 // Open the file for reading
-if ($file_handle = fopen($filename, 'r')) {
-    // Read one line from the csv file, use comma as separator
-    while ($data = fgetcsv($file_handle)) {
-        $books[] = fill_book($data[0]);
-    }
-    // Close the file
-    fclose($file_handle);
-}
+
 // Display the code in a readable format
 //var_dump($books);
+/*
 if ($books) {
     $filename = 'downloadFile.csv';
     $file_to_write = fopen($filename, 'w');
@@ -47,13 +48,29 @@ if ($books) {
         echo 'Everything is NOT awesome';
     }
 }
-
+*/
     public function fill_book($isbn) 
     {
         $book = [];
-        $book[0] = $isbn;
-        $book[1] = 'Harry Potter';
-        $book[2] = 'J K Rowling';
-        return $book;
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://postman.stellasinawebb.se/api/book_api/read_single.php?ISBN=".$isbn."&apiKey=5cdc665eac26c&fbclid=IwAR3P8twqAaRSr-pgGcrYbGtBlTfpDF5y-4CVfL8ZJr46GccrZr1Ii5WMiS4");
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        $bookInfo = curl_exec($ch);
+        curl_close($ch);
+        
+        $answer = explode('{', $bookInfo);
+        $answer = "{".$answer[1];
+        $answer = json_decode($answer, true);
+       if($answer['ISBN'] != "null"){
+        
+            $book[0] = $isbn;
+            $book[1] = $answer['bookTitle'];
+            $book[2] = $answer['authorName'];
+            $book[3] = $answer['publisherName'];
+            return $book;
+        }else{
+            return;
+        }
     }
 }

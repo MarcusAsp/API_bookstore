@@ -18,7 +18,7 @@ class User {
             if(password_verify($password, $hash)) 
             {
                 $_SESSION['user'] = $email;
-                header('location: service.php');
+                header('location: library.php');
             }
             else 
             {
@@ -65,7 +65,7 @@ class User {
         $answer = $stmt->execute();
         if($answer === true ){
             $_SESSION['user'] = $userInfo['email'];
-            Header('Location: service.php');
+            Header('Location: library.php');
           }else {
             echo "<script>alert('ERROR: User was not created!');</script>";
          }
@@ -76,8 +76,13 @@ class User {
 
     public function setStripeId($stripeId){
         $user = $_SESSION['user'];
-        $userData = $this->userExist($user, true);
-        return $userData;
+        
+        $stmt = $this->db->prepare("UPDATE users 
+        (`stripe_id`) SET (:stripe_id) WHERE user = $user");
+        $stmt->bindParam(":stripe_id", $stripeId, PDO::PARAM_STR);
+            
+        $answer = $stmt->execute();
+       
     }
 
 }

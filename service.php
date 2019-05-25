@@ -1,8 +1,30 @@
 <?php
 session_start();
-//session_destroy();
 require_once('includes/user.inc.php');
+require_once('includes/convert.inc.php');
+if(isset($_GET['logOut'])){
+  session_destroy();
+  Header('Location: index.php');
+}
+if (isset($_FILES)) {
+  $check = true;
+  $extension = pathinfo($_FILES['books_file']['name'], PATHINFO_EXTENSION);
+  if ($extension !== 'csv') {
+      $check = false;
+      Header('Location: library.php');
+      die;
+  }
+  if ($check) {
+      $file_id = uniqid();
+      $path = realpath('./') . '/csv_uploads/' . $file_id . ".csv";
+      move_uploaded_file($_FILES['books_file']['tmp_name'], "$path");
+  }
+}
 
+if(isset($_GET['logOut'])){
+  session_destroy();
+  header('Location :index.php');
+}
 ?>
 <html>
 <head>
@@ -10,29 +32,47 @@ require_once('includes/user.inc.php');
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-<form method="post" id="payment-form" enctype="multipart/form-data">
+<form action="charge.php" method="post" id="payment-form" enctype="multipart/form-data">
   
-Upload your CSV file:<br>
-<?php
-if(isset($_POST[''])){
-?>
-  <table>
+Your Books:<br>
+  <table class="Books-table">
+    <tbody>
     <tr>
       <th>ISBN</th>
       <th>Book title</th>
       <th>Author</th>
+      <th>Publisher</th>
   </tr>
   <?php
-
-foreach(){
-
-}
-
-  ?>
-  </table>
+$csvBooks = new Convert();
+$theCsvBooks = $csvBooks->getBooks($path);
+$_SESSION['order'] = $theCsvBooks;
+foreach($theCsvBooks as $book){
+?>
+  <tr>
+  <td><?php echo($book[0]); ?></td>
+  <td><?php echo($book[1]); ?></td>
+  <td><?php echo($book[2]); ?></td>
+  <td><?php echo($book[3]); ?></td>
+  </tr>
 <?php
 }
+  ?>
+  </tbody>
+  </table>
+<?php
+
 ?>
+<hr>
+<br>
+<div class="form-row">
+    <label for="card-element">Credit or debit card</label>
+    <div id="card-element">
+      <!-- a Stripe Element will be inserted here. -->
+    </div>
+    <!-- Used to display form errors -->
+    <div id="card-errors"></div>
+  </div>
   <input type="submit" value="Submit Payment">
 </form>
 <a href="?logOut=true">Log out!</a>
@@ -47,8 +87,6 @@ foreach(){
 <script src="charge.js"></script>
 <?php
 
-$userClass = new User();
-$userInfo = $userClass->setStripeId(4234234);
 ?>
 </body>
 </html>

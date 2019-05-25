@@ -1,19 +1,7 @@
 <pre>
 <?php
+require_once('includes/user.inc.php');
 require_once('includes/convert.inc.php');
-if (isset($_FILES)) {
-    $check = true;
-    if ($_FILES['books_file']['type'] !== 'text/csv') {
-        $check = false;
-        Header('Location: service.php');
-    }
-    if ($check) {
-        $file_id = uniqid();
-        $path = realpath('./') . '/csv_uploads/' . $file_id . ".csv";
-        move_uploaded_file($_FILES['books_file']['tmp_name'], "$path");
-    }
-}
-
 require_once('vendor/stripe/stripe-php/init.php');
 
 \Stripe\Stripe::setApiKey('sk_test_2PDY77YQecnXCCzvlaePy98m00km8LjgsH'); //YOUR_STRIPE_SECRET_KEY
@@ -157,7 +145,9 @@ if (isset($customer)) {
     }
 
     if ($charge_customer) {
-        print_r($charge);
+        if(){
+            $userClas->setStripeId($charge_customer['id']);
+        }
     }
 }
 

@@ -32,7 +32,7 @@
 }
 #payment-form{
     margin: 300px auto 0 auto;
-    width: 500px;
+    width: 800px;
     padding: 20px;
     border-radius: 10px;
     border: 1px solid orange;
@@ -44,4 +44,16 @@
     padding: 20px;
     border-radius: 10px;
     border: 1px solid orange;
+}
+
+.__PrivateStripeElement{
+    width: 100% !important;
+}
+
+.Books-table{
+    width: 100%;
+}
+
+.Books-table > tbody > tr{
+    margin-bottom: 10px;
 }
