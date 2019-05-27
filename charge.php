@@ -1,5 +1,6 @@
 <pre>
 <?php
+session_start();
 require_once('includes/user.inc.php');
 require_once('includes/convert.inc.php');
 require_once('vendor/stripe/stripe-php/init.php');
@@ -10,16 +11,15 @@ require_once('vendor/stripe/stripe-php/init.php');
 $token = $_POST['stripeToken'];
 
 $userClass = new User();
-$userInfo = $userClass->userExist($_SESSION['user']);
+$userInfo = $userClass->userExist($_SESSION['user'], true);
 
-
-$name_first = "Batosai";
-$name_last = "Ednalan";
-$address = "New Cabalan Olongapo City";
-$state = "Zambales";
-$zip = "22005";
-$country = "Philippines";
-$phone = "09306408219";
+$name_first = $userInfo['fname'];
+$name_last = $userInfo['lname'];
+$address = $userInfo['adress'];
+$state = $userInfo['state'];
+$zip = $userInfo['zip'];
+$country = $userInfo['country'];
+$phone = $userInfo['phone'];
 
 $user_info = [
     'First Name' => $name_first,
@@ -31,7 +31,12 @@ $user_info = [
     'Phone' => $phone
 ];
 
-$customer_id = $SOMEARRAY['stripe_id'];
+if(!is_null($userInfo['stripe_id'])){
+    $customer_id = $userInfo['stripe_id'];
+}else{
+    $customer_id;
+}
+
 
 if (isset($customer_id)) {
     try {
@@ -67,7 +72,7 @@ if (isset($customer_id)) {
     try {
         // Use Stripe's library to make requests...
         $customer = \Stripe\Customer::create(array(
-            'email' => 'rednalan@gmail.com',
+            'email' => $userInfo['email'],
             'source' => $token,
             'metadata' => $user_info,
         ));
@@ -144,40 +149,12 @@ if (isset($customer)) {
         // Something else happened, completely unrelated to Stripe
     }
 
-    if ($charge_customer) {
-        if(){
-            $userClas->setStripeId($charge_customer['id']);
+    if ($charge_customer){
+        if(is_null($userInfo['stripe_id'])){
+            $success = $userClass->setStripeId($customer->id);
+            if($success){
+                Header('Location: reciept.php');
+            }
         }
     }
 }
-
-// You can charge the customer later by using the customer id.
- 
-//Making a Subscription Charge
-// Get the token from the JS script
-//$token = $_POST['stripeToken'];
-// Create a Customer
-//$customer = \Stripe\Customer::create(array(
-//    "email" => "paying.user@example.com",
-//    "source" => $token,
-//));
-
-// or you can fetch customer id from the database too.
-// Creates a subscription plan. This can also be done through the Stripe dashboard.
-// You only need to create the plan once.
-
-//$subscription = \Stripe\Plan::create(array(
-//    "amount" => 2000,
-//    "interval" => "month",
-//    "name" => "Gold large",
-//    "currency" => "cad",
-//    "id" => "gold"
-//));
-
-// Subscribe the customer to the plan
-//$subscription = \Stripe\Subscription::create(array(
-//    "customer" => $customer->id,
-//    "plan" => "gold"
-//));
-
-//print_r($subscription);

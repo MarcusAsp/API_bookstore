@@ -14,7 +14,7 @@ class User {
             $stmt->bindParam(":email", $email, PDO::PARAM_STR);
             $stmt->execute();
             $hash = $stmt->fetchColumn();
-            
+            echo "<script>alert('".$password."');</script>";
             if(password_verify($password, $hash)) 
             {
                 $_SESSION['user'] = $email;
@@ -32,19 +32,21 @@ class User {
     }
 
     public function userExist($email, $getInfo = false){
+        echo "<script>alert('".$email."');</script>";
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
         if($stmt->execute([':email' => $email]) === true){
             if($getInfo == false){
                 return true;
             }else{
-                return $stmt->fetch(PDO::FETCH_ASSOC);
+                $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $row;
             }
             
         }
     }
 
     public function createAccount($userInfo){
-        if($this->userExist($userInfo['email'])){
+        if($this->userExist($userInfo['email'], "lala")){
             echo "<script>alert('User aready exists!');</script>";
             die;
         }else {
@@ -76,13 +78,10 @@ class User {
 
     public function setStripeId($stripeId){
         $user = $_SESSION['user'];
-        
-        $stmt = $this->db->prepare("UPDATE users 
-        (`stripe_id`) SET (:stripe_id) WHERE user = $user");
+        $stmt = $this->db->prepare("UPDATE users SET stripe_id = :stripe_id WHERE email = '$user'");
         $stmt->bindParam(":stripe_id", $stripeId, PDO::PARAM_STR);
-            
         $answer = $stmt->execute();
-       
+        return $answer;
     }
 
 }

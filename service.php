@@ -33,36 +33,20 @@ if(isset($_GET['logOut'])){
 </head>
 <body>
 <form action="charge.php" method="post" id="payment-form" enctype="multipart/form-data">
-  
-Your Books:<br>
-  <table class="Books-table">
-    <tbody>
-    <tr>
-      <th>ISBN</th>
-      <th>Book title</th>
-      <th>Author</th>
-      <th>Publisher</th>
-  </tr>
+
   <?php
 $csvBooks = new Convert();
 $theCsvBooks = $csvBooks->getBooks($path);
 $_SESSION['order'] = $theCsvBooks;
-foreach($theCsvBooks as $book){
 ?>
-  <tr>
-  <td><?php echo($book[0]); ?></td>
-  <td><?php echo($book[1]); ?></td>
-  <td><?php echo($book[2]); ?></td>
-  <td><?php echo($book[3]); ?></td>
-  </tr>
 <?php
+  foreach($csvBooks->booksNotFound as $bookNotFound){
+?>
+<p><?php echo($bookNotFound); ?> was not found</p>
+  <?php
 }
-  ?>
-  </tbody>
-  </table>
-<?php
-
 ?>
+<br>
 <hr>
 <br>
 <div class="form-row">
@@ -73,6 +57,7 @@ foreach($theCsvBooks as $book){
     <!-- Used to display form errors -->
     <div id="card-errors"></div>
   </div>
+  <br>
   <input type="submit" value="Submit Payment">
 </form>
 <a href="?logOut=true">Log out!</a>

@@ -32,9 +32,6 @@ Upload your CSV file:<br>
 else{
   Header('Location: index.php');
 }
-
-$userClass = new User();
-$userInfo = $userClass->setStripeId(4234234);
 ?>
 </body>
 </html>
