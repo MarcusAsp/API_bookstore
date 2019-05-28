@@ -2,7 +2,6 @@
 <?php
 session_start();
 require_once('includes/user.inc.php');
-require_once('includes/convert.inc.php');
 require_once('vendor/stripe/stripe-php/init.php');
 
 \Stripe\Stripe::setApiKey('sk_test_2PDY77YQecnXCCzvlaePy98m00km8LjgsH'); //YOUR_STRIPE_SECRET_KEY
@@ -12,6 +11,7 @@ $token = $_POST['stripeToken'];
 
 $userClass = new User();
 $userInfo = $userClass->userExist($_SESSION['user'], true);
+$userInfo = $userInfo[0];
 
 $name_first = $userInfo['fname'];
 $name_last = $userInfo['lname'];
@@ -31,12 +31,9 @@ $user_info = [
     'Phone' => $phone
 ];
 
-if(!is_null($userInfo['stripe_id'])){
+if (!is_null($userInfo['stripe_id'])) {
     $customer_id = $userInfo['stripe_id'];
-}else{
-    $customer_id;
 }
-
 
 if (isset($customer_id)) {
     try {
@@ -46,7 +43,7 @@ if (isset($customer_id)) {
         // Since it's a decline, \Stripe\Error\Card will be caught
         $body = $e->getJsonBody();
         $err  = $body['error'];
-    
+
         print('Status is:' . $e->getHttpStatus() . "\n");
         print('Type is:' . $err['type'] . "\n");
         print('Code is:' . $err['code'] . "\n");
@@ -80,7 +77,7 @@ if (isset($customer_id)) {
         // Since it's a decline, \Stripe\Error\Card will be caught
         $body = $e->getJsonBody();
         $err  = $body['error'];
-    
+
         print('Status is:' . $e->getHttpStatus() . "\n");
         print('Type is:' . $err['type'] . "\n");
         print('Code is:' . $err['code'] . "\n");
@@ -124,7 +121,7 @@ if (isset($customer)) {
         // Since it's a decline, \Stripe\Error\Card will be caught
         $body = $e->getJsonBody();
         $err  = $body['error'];
-    
+
         print('Status is:' . $e->getHttpStatus() . "\n");
         print('Type is:' . $err['type'] . "\n");
         print('Code is:' . $err['code'] . "\n");
@@ -149,12 +146,15 @@ if (isset($customer)) {
         // Something else happened, completely unrelated to Stripe
     }
 
-    if ($charge_customer){
-        if(is_null($userInfo['stripe_id'])){
+    if ($charge_customer) {
+        if (is_null($userInfo['stripe_id'])) {
             $success = $userClass->setStripeId($customer->id);
-            if($success){
+            if ($success) {
+                die;
                 Header('Location: reciept.php');
             }
+        } else {
+            Header('Location: reciept.php');
         }
     }
 }

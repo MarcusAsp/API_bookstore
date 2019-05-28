@@ -32,7 +32,6 @@ class User {
     }
 
     public function userExist($email, $getInfo = false){
-        echo "<script>alert('".$email."');</script>";
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
         if($stmt->execute([':email' => $email]) === true){
             if($getInfo == false){

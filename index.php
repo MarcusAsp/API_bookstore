@@ -14,13 +14,12 @@ if (isset($_POST['register'])) {
     $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_NUMBER_INT);
     $pass = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
     $pass = password_hash($pass, PASSWORD_DEFAULT);
-    $userInfo = ["email"=>$email, "pass"=>$pass, "fname"=>$fname, "lname"=>$lname, "adress"=>$adress, "state"=>$state, "zip"=>(int)$zip, "country"=>$country, "phone"=>(int)$phone];
+    $userInfo = ["email" => $email, "pass" => $pass, "fname" => $fname, "lname" => $lname, "adress" => $adress, "state" => $state, "zip" => (int)$zip, "country" => $country, "phone" => (int)$phone];
 
     $user = new User();
     $user->createAccount($userInfo);
-
 } else if (isset($_POST['logIn'])) {
-    
+
     $email = filter_input(INPUT_POST, 'email1', FILTER_SANITIZE_STRING);
     $pass = filter_input(INPUT_POST, 'password1', FILTER_SANITIZE_STRING);
 
@@ -29,6 +28,7 @@ if (isset($_POST['register'])) {
 }
 ?>
 <html>
+
 <head>
     <title>Login php</title>
     <link rel="stylesheet" type="text/css" href="style.css">
