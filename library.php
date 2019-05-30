@@ -1,12 +1,16 @@
 <?php
 session_start();
+// Includes required classes
 require_once('includes/user.inc.php');
 require_once('includes/convert.inc.php');
 
+
+// Checks if the logOut button is pressed
 if (isset($_GET['logOut'])) {
   session_destroy();
   Header('Location: index.php');
 }
+// Checks if the Session with the name "user" is set. Otherwise link to the index.php page
 if (isset($_SESSION['user'])) {
   ?>
   <html>

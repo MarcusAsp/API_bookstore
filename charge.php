@@ -1,18 +1,23 @@
 <pre>
 <?php
 session_start();
+
+// Includes required classes
 require_once('includes/user.inc.php');
 require_once('vendor/stripe/stripe-php/init.php');
 
+// Sets my personal API key to make sure that every purchase goes to my business account.
 \Stripe\Stripe::setApiKey('sk_test_2PDY77YQecnXCCzvlaePy98m00km8LjgsH'); //YOUR_STRIPE_SECRET_KEY
 
-// Get the token from the JS script
+// Gets the validation token from the JS script that is inserted right before the user clicks on the "purchase"-button
 $token = $_POST['stripeToken'];
 
+// Creates a class and checks if the user exists. And if it does exist, return the information about the user
 $userClass = new User();
 $userInfo = $userClass->userExist($_SESSION['user'], true);
 $userInfo = $userInfo[0];
 
+// Sets the database values to the appropriate values
 $name_first = $userInfo['fname'];
 $name_last = $userInfo['lname'];
 $address = $userInfo['adress'];
@@ -21,6 +26,7 @@ $zip = $userInfo['zip'];
 $country = $userInfo['country'];
 $phone = $userInfo['phone'];
 
+// Sets the user values to the correct array value
 $user_info = [
     'First Name' => $name_first,
     'Last Name' => $name_last,
@@ -31,10 +37,35 @@ $user_info = [
     'Phone' => $phone
 ];
 
+// Checks if the user already is a customer and have used stripe before. If so, set the customer_id to the customer_id fetched from the database
 if (!is_null($userInfo['stripe_id'])) {
     $customer_id = $userInfo['stripe_id'];
 }
+/*
+If the customer_id is set, then the true block will run. Otherwise the elseblock will run
+--true block (
+The code will try to fetch the customer in Stripes database with their information about the customer.
+If the Card fails, it will link to another page "errorPage.php"
+if there is some other error it will display it as a json object with the apporpriate error.
+)
+--else block (
+The customer is created by sending all information we have to the Stripe client.
+which then returns a customer id along with a bunch of information.
+If the Card fails, it will link to another page "errorPage.php"
+if there is some other error it will display it as a json object with the apporpriate error.
+)
 
+After the If statement we will enter another if statement to check if the customer variable is set.
+If it is true (
+    The code will send a "charge" query to Stripe with that customer.
+    If the charge was successfull. Then the code will take the stripe customer_id and update -
+    our database with that information.
+    And last of all we link the user to the reciept.php page.
+)
+if it is false (
+    Do nothing.
+)
+*/
 if (isset($customer_id)) {
     try {
         // Use Stripe's library to make requests...
@@ -50,6 +81,7 @@ if (isset($customer_id)) {
         // param is '' in this case
         print('Param is:' . $err['param'] . "\n");
         print('Message is:' . $err['message'] . "\n");
+        Header('Location: errorPage.php');
     } catch (\Stripe\Error\RateLimit $e) {
         // Too many requests made to the API too quickly
     } catch (\Stripe\Error\InvalidRequest $e) {
@@ -84,6 +116,7 @@ if (isset($customer_id)) {
         // param is '' in this case
         print('Param is:' . $err['param'] . "\n");
         print('Message is:' . $err['message'] . "\n");
+        Header('Location: errorPage.php');
     } catch (\Stripe\Error\RateLimit $e) {
         // Too many requests made to the API too quickly
     } catch (\Stripe\Error\InvalidRequest $e) {
@@ -102,7 +135,6 @@ if (isset($customer_id)) {
 }
 
 if (isset($customer)) {
-    print_r($customer);
 
     $charge_customer = true;
 
@@ -150,7 +182,6 @@ if (isset($customer)) {
         if (is_null($userInfo['stripe_id'])) {
             $success = $userClass->setStripeId($customer->id);
             if ($success) {
-                die;
                 Header('Location: reciept.php');
             }
         } else {

@@ -1,7 +1,9 @@
 <?php
 session_start();
+// Includes required classes
 require_once('includes/user.inc.php');
 require_once('includes/convert.inc.php');
+// Checks if the logOut button is pressed
 if (isset($_GET['logOut'])) {
   session_destroy();
   Header('Location: index.php');
@@ -20,14 +22,12 @@ if (isset($_GET['logOut'])) {
     Your Books:<br>
     <table class="Books-table">
       <tbody>
-        <tr>
-          <th>ISBN</th>
-          <th>Book title</th>
-          <th>Author</th>
-          <th>Publisher</th>
-        </tr>
+      
         <?php
+
+        // Gets the array with the valid information wich the user bought for.
         $theCsvBooks = $_SESSION['order'];
+        // foreach item in the array. Print the array values in td elements
         foreach ($theCsvBooks as $book) {
           ?>
           <tr>
@@ -45,7 +45,17 @@ if (isset($_GET['logOut'])) {
     <hr>
     <br>
     <?php
+    /* 
+      Checks if the order session is set.
+      --true(
+        sets filename to the general downloadfile which is "downloadFile.csv"
+        Opens the file for writing and sets the everything_is_awesome variable to true if everything was a success.
+        foreach item in the array. Print it to the file and then close it.
+        if the everything_is_awesome variable is true, then print out a link to download the file.
+        else, Print "everything is NOT awesome.
+      )
 
+    */
     if (isset($_SESSION['order'])) {
       $filename = 'downloadFile.csv';
       $file_to_write = fopen($filename, 'w');

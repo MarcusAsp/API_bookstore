@@ -1,4 +1,5 @@
 <?php
+// This page sets up a connection to the database with the selected settings.
 class Dbh {
     private $username = "root";
     private $password = "root";
